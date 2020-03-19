@@ -34,3 +34,4 @@ data = pd.DataFrame(workbook_queryDict, columns=colNames)
             
 print(data.shape)
 contactBook = data.copy()
+# 后续考虑如何try exception，容纳几种常见错误。
