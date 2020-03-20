@@ -1,3 +1,7 @@
 # Preface
 
 *This is at first a corner for me to learn using github and understand how others are solving bugs and various problems in thier projects. Also I'm gonna make some repository to hold my little work which can easy my life.*
+
+Codes in the repository may not be very complete, because it's tested in jupyter, some lines might not be enough to directly executed as a script. Due to some confidential regulations, some file information will be erased or covered.
+
+All copyrights reserved. Copyright © 2020 by Steven Lee.
