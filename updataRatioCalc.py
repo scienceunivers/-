@@ -157,7 +157,17 @@ updateRatioTable['updateRatio']=1-updateRatioTable['UNupdateRatio']
 updateRatioTable_replaced = updateRatioTable.replace(to_replace=np.nan,value='#DIV/0!')
 
 
-
+with pd.ExcelWriter(r'D:\互联网金融协会\目前的工作\共享平台\20201109\{:%Y%m%d%H%M}updateRatioTable.xlsx'.format(dt.datetime.today()),
+                       date_format='YYYY/MM/DD') as writer:
+    updateTableWithUnpaid.to_excel(writer,
+                                         sheet_name='updateTableWithUnpaid',
+                                         na_rep='#N/A'
+                     )
+    updateRatioTable_replaced.to_excel(writer,
+                                         sheet_name='updateRatioTable_replaced',
+                                         na_rep='#N/A')
+# updateTableWithUnpaid写进excel的时候会在表头下多一个空行，原因在于https://github.com/pandas-dev/pandas/issues/27772，
+# 空行是为了以下情景：如果index是multiindex，而且多个level都被命名了，这个空行是给level的名字留的空间。这是个bug。
 
 '''
 
