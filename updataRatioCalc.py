@@ -157,7 +157,7 @@ updateRatioTable['updateRatio']=1-updateRatioTable['UNupdateRatio']
 updateRatioTable_replaced = updateRatioTable.replace(to_replace=np.nan,value='#DIV/0!')
 
 
-with pd.ExcelWriter(r'D:\互联网金融协会\目前的工作\共享平台\20201109\{:%Y%m%d%H%M}updateRatioTable.xlsx'.format(dt.datetime.today()),
+with pd.ExcelWriter(r'D:\...\gxpt\20201109\{:%Y%m%d%H%M}updateRatioTable.xlsx'.format(dt.datetime.today()),
                        date_format='YYYY/MM/DD') as writer:
     updateTableWithUnpaid.to_excel(writer,
                                          sheet_name='updateTableWithUnpaid',
