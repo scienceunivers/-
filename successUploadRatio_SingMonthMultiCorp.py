@@ -75,15 +75,15 @@ updateDetail = pd.read_csv(r'D:\...\gxpt\20200221\202002281500mxbsqkck.csv',
 # 引擎用的是PHP的preg_match_all
 
 
-# 8.2.9 Assigning New Columns in Method Chains，
-# 9.6.2 Row or Column-wise Function Application，按列汇总，
-# 9.6.3 Aggregation API，9.6.4Transform API。
-# 12.13 Boolean indexing。
-# 12.15 The where() Method and Masking
-# query()可以，但比较麻烦
-# CH14 Computational tools也没有合适的方法。
-# CH16 group by。
 grouped = updateDetail.groupby('报送机构').agg({'入库记录数':sum,'出错记录数':sum})
 # group完了接着针对2列汇总。
 successedUploadRatio = grouped.assign(入库率=grouped['入库记录数']/(grouped['出错记录数']+grouped['入库记录数']))
 successedUploadRatio_replaced = successedUploadRatio.replace(to_replace=np.nan,value='#DIV/0!')
+
+
+with pd.ExcelWriter(r'D:...\gxpt\20200907\{:%Y%m%d%H%M}successedUploadRatio.xlsx'.format(dt.datetime.today()),
+                       date_format='YYYY/MM/DD') as writer:
+    successedUploadRatio_replaced.to_excel(writer,
+                                         sheet_name='successedUploadRatio_replaced',
+                                         
+                     )
