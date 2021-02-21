@@ -3,25 +3,13 @@ import pandas as pd, numpy as np
 import datetime as dt
 import time
 import random
-import xlrd, openpyxl
+# import xlrd, openpyxl
 
 '''
 workbook_successedUploadRatio = xlrd.open_workbook(r'D:\...\gxxp\20190906\4-1 ajgrkl(2019-09-16)_复制粘贴.xlsx')
 sheetNames = workbook_successedUploadRatio.sheet_names()
 print(sheetNames)
 objectiveSheet = sheetNames[0]
-
-nRows, nCols = workbook_successedUploadRatio.sheet_by_name(objectiveSheet).nrows, workbook_successedUploadRatio.sheet_by_name(objectiveSheet).ncols
-colNames = []
-workbook_successedUploadRatioDict = {}
-for i in range(0, nCols):
-    colNames.append(workbook_successedUploadRatio.sheet_by_name(objectiveSheet).col_values(i)[0])
-    workbook_successedUploadRatioDict[workbook_successedUploadRatio.sheet_by_name(objectiveSheet).col_values(i)[0]] = \
-        workbook_successedUploadRatio.sheet_by_name(objectiveSheet).col_values(i)[1:]
-data = pd.DataFrame(workbook_successedUploadRatioDict, columns=colNames)
-print(data.shape)
-
-
 
 # 现在的生产系统计算逻辑是不现实的。
 
@@ -48,12 +36,9 @@ updateDetail = pd.read_csv(r'D:\...\gxpt\20200221\202002281500mxbsqkck.csv',
                            low_memory=True, memory_map=False, float_precision=None)
 # names=['序号','文件名称','文件类型','报送机构','报送时间','入库时间','处理状态','入库记录数','出错记录数'], 
 
-# xlrd能否读csv?
+# xlrd读csv:
 # XLRDError: Unsupported format, or corrupt file: Expected BOF record; found b'\xb2\xe9\xd1\xaf\xcc\xf5\xbc\xfe',
 # 对这个错误的分析见External-excel processing-xlrd, xlwt.docx。
-# 结论：xlrd是不能读取csv的，结论很明确。
-
-# 读取完不会出现excel打开txt那种错位，很给力。
 
 
 # 明细报送，得先清洗数据，有些记录没有入库时间，导致后面几列错位，excel的话从最后一列出错记录开始修正
@@ -65,9 +50,9 @@ updateDetail = pd.read_csv(r'D:\...\gxpt\20200221\202002281500mxbsqkck.csv',
 # pd.read_csv(r'D:\...\20191229\20191229mxbsqkck.csv', sep=……, 
 #             delimiter=None, header=2, names=None, index_col=0, usecols=None, dtype=None, engine='python')
 
-# 当sep=’(\s)*,’，含义就是0或多次whitespace+逗号，但匹配的结果总是会在9个字段两两之间多出8个字段，
+# ’(\s)*,’，0或多次whitespace+逗号，但匹配的结果总是会在9个字段两两之间多出8个字段，
 # 字段名是none，字段的内容都是清一色\t。
-# 也不是我的regex没有转义的原因，看起来读取效果是non greedy，这也不对，单独的*是greedy的。
+# 也不是regex没有转义的原因，与是否greedy无关。
 # 肯定是括号的原因。
 
 # http://www.regexplanet.com/advanced/python/index.html给’(\s)*,’的反馈是()出错，
@@ -87,3 +72,5 @@ with pd.ExcelWriter(r'D:...\gxpt\20200907\{:%Y%m%d%H%M}successedUploadRatio.xlsx
                                          sheet_name='successedUploadRatio_replaced',
                                          
                      )
+
+# 后续考虑用pickle，或%store，实现share date between notebooks。
