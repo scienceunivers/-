@@ -78,7 +78,6 @@ basicInfo = ['basicInfo']
 updateTableIndex = pd.MultiIndex.from_product(iterables=[cleanLevel1,cleanLevel2],
                                    names=['month','DataType'])
 
-# 怎么将excel中间的一堆数提取出来的，container选哪个？
 
 updateTableFromReadExcel = pd.read_excel(r'D:\...\gxpt\20200221\3-1gygxlxx(2020-03-03).xls',
                 sheet_name=0,header=[j,j+1], names=None, index_col=None, 
@@ -102,9 +101,8 @@ updateTableFromReadExcel.fillna(value={('管理员账号','Unnamed: 3_level_1'):
 
 
 
-
-
 # 计算df_effectiveUnpaid。
+
 # updateTableFromReadExcel.assign((slice(None),'df_effectiveUnpaid')=(slice(None),'df_effective')-(slice(None),'df_effectivePaid')
 #                                       -(slice(None),'Z')-(slice(None),'G')-(slice(None),'D'))
 # SyntaxError: keyword can't be an expression，(slice(None)
