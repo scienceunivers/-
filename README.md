@@ -1,9 +1,14 @@
 # Preface
 
-*This is at first a place for me to learn using github and understand how others are solving bugs and various problems in thier projects. Also I'm gonna make some repos to hold my  work which can easy my life.*
+Repos holding my scripts to ease my life. 
 
-Codes in the repository may not be perfect, because it's tested in jupyter, some lines might not be enough to directly executed as a script. Due to some confidential regulations, some file information will be erased or covered.
+Aiming to: 
+1. Automate the daily work about examining lending data cooperators upload. 
+2. Automate monthly operation report on the platform I'm maitaining.
+3. Automate operations concerning clicking, pressing or filling repeatedly.
 
-This repo is mainly aimed to automate the weekly work for me about grading data that cooperation partners upload. In future I will try to renew the pieces involving excel formulas written in xlrd using openpyxl.
+It is in jupyter notebook that I tested these codes, parts of which might not be able to directly executed as a script in IDE or shell. Due to some confidential regulations, some file information will be erased or covered.
 
-All copyrights reserved. Copyright © 2020 by Steven Lee.
+Code pieces will be constantly improved to be more compact with particular loops and data structures.
+
+All copyrights reserved. Copyright © 2020-2021 by Steven Lee.
