@@ -9,4 +9,4 @@ It is in jupyter notebook that I tested these codes, parts of which might not be
 
 Code pieces will be constantly improved to be more compact with particular loops and data structures.
 
-All copyrights reserved. Copyright © 2020-2021 by Steven Lee.
+All copyrights reserved. Copyright © 2020-2022 by Steven Lee.
