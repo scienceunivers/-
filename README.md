@@ -1,7 +1,5 @@
 # Preface
 
-Repos holding my scripts to ease my life. 
-
 Aiming to: 
 1. Automate the daily work about examining lending data cooperators upload. 
 2. Automate monthly operation report on the platform I'm maitaining.
