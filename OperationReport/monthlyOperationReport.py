@@ -81,7 +81,7 @@ print(
 )
 originalData_jieruzongbiao.loc[:,['xysjc','pxsjc','jrcssjc','zsjrsjc']].dtypes 
 # 验证各类时间戳类型。
-# originalData_jieruzongbiao['正式接入时间戳'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
+# originalData_jieruzongbiao['zsjrsjc'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
 # 后续如有其它脏数据，再改regex。
 
 
@@ -92,9 +92,8 @@ originalData_jieruzongbiao.loc[:,['xysjc','pxsjc','jrcssjc','zsjrsjc']].dtypes
 
 
 
-# 正式接入机构。
 officiallyParticiOrg_jieruzongbiao=originalData_jieruzongbiao.loc[
-    (originalData_jieruzongbiao['hzxy']!='4协议解除')
+    (originalData_jieruzongbiao['hzxy']!='4xyjc')
         &~(originalData_jieruzongbiao['zsjr'].isna())
            &(originalData_jieruzongbiao['zsjrsjc']<=dt.datetime(2021,1,31)),:
     ]
@@ -102,7 +101,7 @@ officiallyParticiOrg_jieruzongbiao=originalData_jieruzongbiao.loc[
 officiallyParticiOrg_jieruzongbiao_danweiquancheng=officiallyParticiOrg_jieruzongbiao.loc[:,'单位全称'
     ]
 print(
-    '截至月末正式接入报数机构{}家({:%Y%m%d})'.format
+    '截至月末机构{}家({:%Y%m%d})'.format
     (
    officiallyParticiOrg_jieruzongbiao.shape[0],dt.datetime.today()
     )
@@ -113,7 +112,6 @@ officiallyParticiOrg_jieruzongbiao_20210203=officiallyParticiOrg_jieruzongbiao.c
 
 
 
-# 当前接入机构情况汇总。
 originalData_jierujigouhuizongbiao = pd.read_excel(
     r'...\gxpt\cyzb\202102202055gxptdqjrjgqkhz.xlsx',
     sheet_name=0,header=0, names=None, index_col=None, 
@@ -133,7 +131,7 @@ originalData_jiekoujierubiao = pd.read_excel(
     skipfooter=0, convert_float=True, mangle_dupe_cols=True
 )
 
-# 1224后续要读取两个月份的接口接入进度表，还是把更新日期列统一成datetime64更方便。通过如下代码：
+# 1224后续要读取两个月份的jkjrjdb，还是把更新日期列统一成datetime64更方便。通过如下代码：
 # originalData_jiekoujierubiao.loc[
 #     originalData_jiekoujierubiao['更新日期'].str.contains(r'^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$', regex=True).notna(),:]
 # 检测出某个单元格是string且不含whitespace，是False，非string的元素都返回NaN，这应该就是字符了，输出发现果然是备注列填到了更新日期列。
@@ -146,7 +144,7 @@ officiallyParticiOrg_jiekoujierubiao=originalData_jiekoujierubiao.loc[
 ]
 # pd.NaT>dt.datetime(2020,11,30)，无论>, <,都返回False，与nan类似。
 print(
-    '截至月末接口接入报数机构{}家，网页接入机构{}家({:%Y%m%d})'.format
+    '截至月末机构{}家，机构{}家({:%Y%m%d})'.format
     (
         officiallyParticiOrg_jiekoujierubiao.shape[0],
         officiallyParticiOrg_jieruzongbiao.shape[0]-officiallyParticiOrg_jiekoujierubiao.shape[0],
@@ -157,29 +155,29 @@ print(
 officiallyParticiOrg_jiekoujierubiao_20210201=officiallyParticiOrg_jiekoujierubiao.copy()
 
 
-# 两个表中的正式接入机构进行比较。
+# 两个表中的zsjrjg进行比较。
 # 检验两个集合的机构名称或者机构社会信用代码集合是否相等。
 # 有一个命题，集合A、B非空，A∪B=U，则A=B的充要条件为(A-B)=(B-A)=∅。
 # 思想证明：必要性一眼就看出来，充分性，A-B与B-A是互斥的（由定义），在Venn图中不存在交集，它们要相等，只能都是空集。
 # 符号证明略。
 print(set(officiallyParticiOrg_jieruzongbiao_danweiquancheng)-set(officiallyParticiOrg_jierujigouhuizongbiao_jierujigouquancheng),'\n',
 set(officiallyParticiOrg_jierujigouhuizongbiao_jierujigouquancheng)-set(officiallyParticiOrg_jieruzongbiao_danweiquancheng))
-# 后续可以写一个prompt，输出集合运算结果，让人判断是否一致（上个月接入汇总表代表了10月的接入总表正式接入机构，所以这个对比
-# 也是本期11月与上期10月接入总表的对比，当然如果读取的是10月接入总表和10月接入汇总表，那二者是一样的），一致则往下运行，
-# 不一致则看是否要对接入汇总表执行补充操作。
-# 一般是接入总表比接入汇总表多，将多的机构补充到接入汇总表中。
+# 后续可以写一个prompt，输出集合运算结果，让人判断是否一致（上个月jrhzb代表了10月的jrzbzsjrjg，所以这个对比
+# 也是本期11月与上期10月jrzb的对比，当然如果读取的是10月jrzb和10月jrhzb，那二者是一样的），一致则往下运行，
+# 不一致则看是否要对jrhzb执行补充操作。
+# 一般是jrzb比jrhzb多，将多的机构补充到jrhzb中。
 
 officiallyParticiOrg_jierujigouhuizongbiao_huiyuanguanlianhuiyuan=officiallyParticiOrg_jierujigouhuizongbiao.loc[
-     ~officiallyParticiOrg_jierujigouhuizongbiao['是否会员或是否与会员具有关联关系'].isna(),:
+     ~officiallyParticiOrg_jierujigouhuizongbiao['shifouhuiyuanhuoguanlian'].isna(),:
  ]
 officiallyParticiOrg_jierujigouhuizongbiao_feihuiyuan=(officiallyParticiOrg_jieruzongbiao.shape[0]
                                                        -officiallyParticiOrg_jierujigouhuizongbiao_huiyuanguanlianhuiyuan.shape[0])
 print(
-    '会员或关联会员机构{}家({:%Y%m%d})'.format
+    '机构{}家({:%Y%m%d})'.format
     (
         officiallyParticiOrg_jierujigouhuizongbiao_huiyuanguanlianhuiyuan.shape[0],dt.datetime.today()
     ),
-    '非会员机构{}家({:%Y%m%d})'.format
+    '机构{}家({:%Y%m%d})'.format
     (
         officiallyParticiOrg_jierujigouhuizongbiao_feihuiyuan,dt.datetime.today()
     ),
@@ -192,35 +190,35 @@ print(
 # 1212总结的代码原则：利用数据集约化，形成复杂数据结构，来简化代码。
 # 将值归类，写成特定数据结构，让多行代码可以用循环、序列完成。
 # 进一步增加数据结构复杂度，简化循环、判断的嵌套层级。
-workbookName=['机构接入总表','测试账号总表','正式账号总表','查询接入总表','T+1接口报送进度表','助贷资金端信息整理',
-              '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式']
-workbookDataframe={'机构接入总表':originalData_jieruzongbiao,
-                   '测试账号总表':None,
-                   '正式账号总表':None,
-                   '查询接入总表':None,
-                   'T+1接口报送进度表':None,
-                   '助贷资金端信息整理':None,
-                   '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':originalData_jierujigouhuizongbiao
+workbookName=['jrzb','cszhzb','zszhzb','cxjrzb','T+1jkbsjdb','zdzjdxxzl',
+              'jrhzb']
+workbookDataframe={'jrzb':originalData_jieruzongbiao,
+                   'cszhzb':None,
+                   'zszhzb':None,
+                   'cxjrzb':None,
+                   'T+1jkbsjdb':None,
+                   'zdzjdxxzl':None,
+                   'jrhzb':originalData_jierujigouhuizongbiao
                   }
-officiallyParticiOrgDataframe={'正式接入机构':[officiallyParticiOrg_jieruzongbiao,officiallyParticiOrg_jierujigouhuizongbiao]
+officiallyParticiOrgDataframe={'zsjrjg':[officiallyParticiOrg_jieruzongbiao,officiallyParticiOrg_jierujigouhuizongbiao]
                    }
 
 # 会员这里两张表中对应列的值不是一套，按原来的思路写，还得写很多判断、try catch，与其在代码中嵌套很多层，
 # 不如在数据字典中多做一些集约化，或者compact design。
 # 把orgTypeColomn扩充为orgTypeAndMemberTypeValueColomn是个非常好的创意，将代码复杂性转移到数据结构上。
-orgTypeColomn={'机构接入总表':'有无牌照',
-               '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':'机构类型'
+orgTypeColomn={'jrzb':'有无牌照',
+               'jrhzb':'机构类型'
                                 }
-orgTypeAndMemberTypeValueColomn={'机构接入总表':
+orgTypeAndMemberTypeValueColomn={'jrzb':
                                  ('有无牌照','是否会员',['是']),
-                                 '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':
-                                 ('机构类型','是否会员或是否与会员具有关联关系',['是','与会员具有关联关系'])
+                                 'jrhzb':
+                                 ('机构类型','shifouhuiyuanhuoguanlian',['是','guanlian'])
                                 }
 
-# memberTypeColumn={'机构接入总表':,'共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':
+# memberTypeColumn={'jrzb':,'jrhzb':
 #                  }
-memberType=['是','是会员','与会员具有关联关系']
-orgType=['持牌消金机构','互联网消费金融','交易所','网络小贷','小额贷款','信托','助贷机构','银行']
+memberType=['是','是会员','guanlian']
+orgType=['cpxjjg','hlwxfjr','jys','wlxd','xedk','xt','zdjg','yh']
 # 机构类型能否通过openpyxl读取出来？可以啊，set就行了。
 
 # targetMonth=9
@@ -228,7 +226,7 @@ orgType=['持牌消金机构','互联网消费金融','交易所','网络小贷'
 
 
 # 1210循环写法
-for dataframe in officiallyParticiOrgDataframe['正式接入机构']:
+for dataframe in officiallyParticiOrgDataframe['zsjrjg']:
     # 对于每张机构接入表格。
     orgCount,memberCount,relatedMemberCount=[],[],[]
     for keys,values in orgTypeAndMemberTypeValueColomn.items():
@@ -262,7 +260,7 @@ for dataframe in officiallyParticiOrgDataframe['正式接入机构']:
                     relatedMemberCount=relatedMemberCount[-1] if len(relatedMemberCount)>0 else 'None',
                     width=30)
                      )
-                # relatedMemberCount由于机构接入总表中没有这一项统计，可能生成[]，所以需要加一个ifelse判断，否则index out of range。
+                # relatedMemberCount由于jrzb中没有这一项统计，可能生成[]，所以需要加一个ifelse判断，否则index out of range。
             
         except KeyError as e:
             continue
@@ -273,9 +271,9 @@ for dataframe in officiallyParticiOrgDataframe['正式接入机构']:
               '{keys}relatedMemberCount:{newline}{Dict}'.format(keys=keys,newline='\n',Dict=dict(zip(orgType,relatedMemberCount)))
              )
         print(orgCount,memberCount,relatedMemberCount)
-        # 我曹，1223发现一个问题，接入汇总表的助贷会员数量是3，但对应的表里明明是4个，我用loc筛选一下，确实是4个助贷会员机构。
+        # 我曹，1223发现一个问题，jrhzb的zhudai会员数量是3，但对应的表里明明是4个，我用loc筛选一下，确实是4个zhudai会员机构。
         # 怀疑是变量传递有问题，但打印的都是memberCount，分业态打印时，打印出来的数量是4个，是对的，用字典形式打印出来，就是3
-        # 个，很可能问题出在形成字典的过程中。也排除了把接入总表中的助贷会员数量3传递到接入汇总表这里的可能（即df与统计的数量
+        # 个，很可能问题出在形成字典的过程中。也排除了把jrzb中的zhudai会员数量3传递到jrhzb这里的可能（即df与统计的数量
         # 错配的可能）。试着把所有有关的变量都打印了一下，发现memberCount由于一直在被append，从内层循环到最外层，没有被清空过，
         # 所以最后它的长度是业态个数*2，所以进行zip的时候会出现不匹配，进而数据丢失或错配。
         # 我在最后增加了print(orgCount,memberCount,relatedMemberCount)，打印出memberCount，证实了这个猜测。
@@ -284,27 +282,27 @@ for dataframe in officiallyParticiOrgDataframe['正式接入机构']:
         
         
         originalData_jieruzongbiao_shenqingjieru=originalData_jieruzongbiao.loc[
-    (~originalData_jieruzongbiao['是否培训'].isna())
-    &(dt.datetime(2021,12,1)<=originalData_jieruzongbiao['培训时间戳'])
-    &(originalData_jieruzongbiao['培训时间戳']<=dt.datetime(2021,12,31)),:
+    (~originalData_jieruzongbiao['sfpx'].isna())
+    &(dt.datetime(2021,12,1)<=originalData_jieruzongbiao['pxsjc'])
+    &(originalData_jieruzongbiao['pxsjc']<=dt.datetime(2021,12,31)),:
 ]
 # originalData_jieruzongbiao_shenqingjieru=originalData_jieruzongbiao_m1.loc[
-#     (dt.datetime(2020,11,1)<=originalData_jieruzongbiao_m1['培训时间戳'])
-#     &(originalData_jieruzongbiao_m1['培训时间戳']<=dt.datetime(2020,11,30)),:
+#     (dt.datetime(2020,11,1)<=originalData_jieruzongbiao_m1['pxsjc'])
+#     &(originalData_jieruzongbiao_m1['pxsjc']<=dt.datetime(2020,11,30)),:
 # ]
 
 originalData_jieruzongbiao_jinrushengchan=originalData_jieruzongbiao.loc[
-    (~originalData_jieruzongbiao['正式接入时间戳'].isna())
-    &(dt.datetime(2021,12,1)<=originalData_jieruzongbiao['正式接入时间戳'])
-    &(originalData_jieruzongbiao['正式接入时间戳']<=dt.datetime(2021,12,31)),:
+    (~originalData_jieruzongbiao['zsjrsjc'].isna())
+    &(dt.datetime(2021,12,1)<=originalData_jieruzongbiao['zsjrsjc'])
+    &(originalData_jieruzongbiao['zsjrsjc']<=dt.datetime(2021,12,31)),:
 ]
 # originalData_jieruzongbiao_jinrushengchan=originalData_jieruzongbiao_m2.loc[
-#     (dt.datetime(2020,9,1)<=originalData_jieruzongbiao_m2['正式接入时间戳'])
-#     &(originalData_jieruzongbiao_m2['正式接入时间戳']<=dt.datetime(2020,9,30)),:
+#     (dt.datetime(2020,9,1)<=originalData_jieruzongbiao_m2['zsjrsjc'])
+#     &(originalData_jieruzongbiao_m2['zsjrsjc']<=dt.datetime(2020,9,30)),:
 # ]
 print
 (
-    '本月申请接入机构{}家，进入生产环境{}家({:%Y%m%d})'.format
+    '机构{}家，{}家({:%Y%m%d})'.format
     (
         originalData_jieruzongbiao_shenqingjieru.shape[0],
         originalData_jieruzongbiao_jinrushengchan.shape[0],
@@ -313,9 +311,9 @@ print
 )
 
 
-# 读取上月月报对应的接入总表。
+# 读取上月月报对应的jrzb。
 # workbook读取代码块，已用r'D:\hlwjrxh\...\1-1各月业务量(2020-11-17).xlsx'做了测试。
-workbook_orgTable_all=openpyxl.load_workbook(r'D:\hlwjrxh\...\1-机构接入总表20210928.xlsx',
+workbook_orgTable_all=openpyxl.load_workbook(r'D:\hlwjrxh\...\1-jrzb20210928.xlsx',
                                             data_only=True)
 # 还是加上data_only，后续需要添加公式，统一添加便了。
 sheetNames = workbook_orgTable_all.sheetnames
@@ -365,7 +363,7 @@ for iRow in workbook_orgTable_all[objectiveSheet].iter_rows(min_col=None, max_co
         # 写成了获得单元格列字母的属性，col_idx是单元格列号的属性，到2.6将column改成了列号，获得列字母的属性改成了get_column_letter。
         # 这个报错得通过看代码来分析……
 data = pd.DataFrame(workbook_orgTable_all_dict, columns=colNames)
-originalData_jieruzongbiao=data.loc[:,:'正式接入时间戳'].copy()
+originalData_jieruzongbiao=data.loc[:,:'zsjrsjc'].copy()
 # columns参数应该是用不着的，dict中的键会被拿来当列名。
 # openpyxl很聪明，把日期列的空单元格都转化成了NaT，把文本列的空单元格转化成了NAN。
 
@@ -381,32 +379,32 @@ originalData_jieruzongbiao.replace(to_replace=r'^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$'
 # 如果to_replace, value参数中任何一个采取regex形式，需令regex=True。如果value=None，则不替换，注意这个，虽然None与np.nan
 # 在df中涉及df运算时被同等对待，但在字符串操作比如替换中，就又不一样。或者直接认为None和nan在df中也是不一样的得了。
 
-originalData_jieruzongbiao.fillna({'协议时间戳':pd.NaT,'培训时间戳':pd.NaT,'接入测试时间戳':pd.NaT,'正式接入时间戳':pd.NaT}
+originalData_jieruzongbiao.fillna({'xysjc':pd.NaT,'pxsjc':pd.NaT,'jrcssjc':pd.NaT,'zsjrsjc':pd.NaT}
                                           ,inplace=True)
 print(
     originalData_jieruzongbiao.loc[originalData_jieruzongbiao.isin([' ']).any(axis=1)].index,'\n',
     originalData_jieruzongbiao.loc[:,originalData_jieruzongbiao.isin([' ']).any(axis=0)].columns
 )
-originalData_jieruzongbiao.loc[:,['协议时间戳','培训时间戳','接入测试时间戳','正式接入时间戳']].dtypes 
+originalData_jieruzongbiao.loc[:,['xysjc','pxsjc','jrcssjc','zsjrsjc']].dtypes 
 # 验证时间戳类型。
-# originalData_jieruzongbiao['正式接入时间戳'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
+# originalData_jieruzongbiao['zsjrsjc'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
 # 验证是否都转化为了目标类型。apply对series直接执行elementwise操作（有sequence相关的函数对它做沿轴的操作），
 # applymap对df执行elementwise操作。
 # 后续如有其它脏数据，再改regex。
 
 
 
-# 上月运行月报正式接入机构。
+# 上月运行月报zsjrjg。
 officiallyParticiOrg_jieruzongbiao=originalData_jieruzongbiao.loc[
-    (originalData_jieruzongbiao['合作协议']!='4协议解除')
-        &~(originalData_jieruzongbiao['正式接入'].isna())
-           &(originalData_jieruzongbiao['正式接入时间戳']<=dt.datetime(2021,8,31)),:
+    (originalData_jieruzongbiao['hzxy']!='4xyjc')
+        &~(originalData_jieruzongbiao['zsjr'].isna())
+           &(originalData_jieruzongbiao['zsjrsjc']<=dt.datetime(2021,8,31)),:
     ]
         
 officiallyParticiOrg_jieruzongbiao_danweiquancheng=officiallyParticiOrg_jieruzongbiao.loc[:,'单位全称'
     ]
 print(
-    '截至{}月末正式接入报数机构{}家({:%Y%m%d})'.format
+    '截至{}月末机构{}家({:%Y%m%d})'.format
     (
         dt.date.today().month-2,
         officiallyParticiOrg_jieruzongbiao.shape[0],dt.datetime.today()
@@ -423,7 +421,7 @@ set(officiallyParticiOrg_jieruzongbiao_20210928['单位全称'])-set(officiallyP
 
 # 上期运行月报对应的接口接入
 originalData_jiekoujierubiao = pd.read_excel(
-    r'D:\hlwjrxh\...\6-T+1接口报送进度表20210617.xlsx',
+    r'D:\hlwjrxh\...\6-T+1jkbsjdb20210617.xlsx',
     sheet_name=0,header=0, names=None, index_col=None, 
     usecols=None, squeeze=False, dtype=None, engine=None, 
     converters=None, true_values=None, false_values=None, skiprows=None, nrows=None, 
@@ -432,7 +430,7 @@ originalData_jiekoujierubiao = pd.read_excel(
     skipfooter=0, convert_float=True, mangle_dupe_cols=True
 )
 
-# 1224后续要读取两个月份的接口接入进度表，发现还是把更新日期列统一成datetime64更方便。通过如下代码：
+# 1224后续要读取两个月份的jkbsjdb，发现还是把更新日期列统一成datetime64更方便。通过如下代码：
 # originalData_jiekoujierubiao.loc[
 #     originalData_jiekoujierubiao['更新日期'].str.contains(r'^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$', regex=True).notna(),:]
 # 检测出某个单元格是string且不含whitespace，是False，非string的元素都返回NaN，这应该就是字符了，输出发现果然是备注列填到了更新日期列。
@@ -444,10 +442,10 @@ officiallyParticiOrg_jiekoujierubiao=originalData_jiekoujierubiao.loc[
     ),:
 ]
 # pd.NaT>dt.datetime(2020,11,30)，无论>, <,都返回False，不可比较，与nan类似。
-# copy出来后面更新查询总表时用。
+# copy出来后面更新cxzb时用。
 officiallyParticiOrg_jiekoujierubiao_20210617=officiallyParticiOrg_jiekoujierubiao.copy()
 print(
-    '截至{}月末接口接入报数机构{}家，网页接入机构{}家({:%Y%m%d})'.format
+    '截至{}月末机构{}家，机构{}家({:%Y%m%d})'.format
     (
         dt.date.today().month-2,
         officiallyParticiOrg_jiekoujierubiao.shape[0],
@@ -465,14 +463,14 @@ print(
 
 
 
-# 接口进度表上期本期一致性。
+# jkbsjdb上期本期一致性。
 print(set(officiallyParticiOrg_jiekoujierubiao_20211227['机构全称'])-set(officiallyParticiOrg_jiekoujierubiao_20210617['机构全称']),'\n',
 set(officiallyParticiOrg_jiekoujierubiao_20210617['机构全称'])-set(officiallyParticiOrg_jiekoujierubiao_20211227['机构全称']))
-# 0517云盘中的接口接入表仍没变，与4月份一样。
+# 0517云盘中的jkbsjdb仍没变，与4月份一样。
 
 
 
-# 如果本期上期接入总表、接口接入进度表都是本期包含上期，则执行此代码。
+# 如果本期上期jrzb、jkbsjdb都是本期包含上期，则执行此代码。
 if (set(officiallyParticiOrg_jieruzongbiao_20220112['单位全称'])>=set(officiallyParticiOrg_jieruzongbiao_20210928['单位全称']))\
 and (set(officiallyParticiOrg_jiekoujierubiao_20211227['机构全称'])>=set(officiallyParticiOrg_jiekoujierubiao_20210617['机构全称'])):
     print(
@@ -485,7 +483,7 @@ else:
          set(officiallyParticiOrg_jieruzongbiao_20210928['单位全称'])-\
          set(officiallyParticiOrg_jieruzongbiao_20220112['单位全称']),
          set(officiallyParticiOrg_jiekoujierubiao_20210617['机构全称'])-set(officiallyParticiOrg_jiekoujierubiao_20211227['机构全称']))
-# 后续可以加一段打标签代码，将本期新增机构打上网页、接口标签，方便插入到查询总表里。
+# 后续可以加一段打标签代码，将本期新增机构打上网页、接口标签，方便插入到cxzb里。
 # orgToAdd={'网页':None,'接口':None}
 
 
@@ -496,7 +494,7 @@ import xlrd, openpyxl,xlwings
 
 
 workbook_queryTable_all = xlwings.Book(r'D:\jlwjrxh\...'+
-        r'\5-cxjrzb202109141120-正式进入生产环境名单275+46.xlsx')
+        r'\5-cxjrzb202109141120-zsjrschjmd275+46.xlsx')
 #              read_only=None, format=None, password=None, write_res_password=None, 
 #              ignore_read_only_recommended=None, origin=None, delimiter=None, editable=None, notify=None, 
 #              converter=None, add_to_mru=None, local=None, corrupt_load=None, impl=None
@@ -547,7 +545,7 @@ objectiveSheet.range('A1:'+'AB500').current_region.rows.count,objectiveSheet.ran
 
 
 # 取列号，列名，第一行的值，得到含有公式的列是哪几列，每列的外部工作簿是什么。
-# 执行时注意，需要把外部工作簿关闭，否则查询总表公式中外部工作簿会变成相对引用。可能因为装在内存中了。
+# 执行时注意，需要把外部工作簿关闭，否则cxzb公式中外部工作簿会变成相对引用。可能因为装在内存中了。
 
 objectiveSheet.range((1,1),(1,18)).get_address(row_absolute=False, column_absolute=False)
 columnHeaderContent = list(zip(
@@ -594,13 +592,13 @@ for column,tuples in columnHeaderContentDict.items():
 # 得到修改日期最新的业务表格。
 # 此段代码对应folderKeyWordPairDict的数据结构为：值为list的dict。
 # folderKeyWordPairDict没法按照列字母展开，因为dict的key不能重复，
-# ['机构接入总表','查询接入总表','接口报送进度表']这三张表在同一个路径下，用dict只能对应1个path key，重复的key对应的value都被更新了。
+# ['jrzb','查询jrzb','jkbsjdb']这三张表在同一个路径下，用dict只能对应1个path key，重复的key对应的value都被更新了。
 # for dir_name,subdirs,files in os.walk(r'D:\hlwjrxh\...'):
 #     print(dir_name,subdirs,files)
 # 注意对汉字的排序是根据编码中的code number，不是拼音顺序。
 folderKeyWordPairDict = {
-    r'D:\jlwjrxh\...\常用总表':['1-机构接入总表','5-查询接入总表','6-T+1接口报送进度表'],
-    r'D:\jlwjrxh\...\周报下载和月报制作\2021年8月':['共享平台周报数据'],
+    r'D:\jlwjrxh\...\cyzb':['1-jrzb','5-查询jrzb','6-T+1jkbsjdb'],
+    r'D:\jlwjrxh\...\zbxzhybzz\2021年8月':['gxptzbsj'],
     r'D:\jlwjrxh\...\20210811':['dataPerMonth','successedUploadRatio','updateRatioTable','各月业务量']
 }
 def newestWorkbook(directory=r'.',workbookKeyWord=''):
@@ -639,10 +637,10 @@ def changeFormula(column=None,rowRange=None,externalWbPath=None,currWb=None,newe
     '''
     cnadidate variable of currWb: 
      currentWb=
-     {'F': ['1-机构接入总表20210119'],
-     'G': ['1-机构接入总表20210119'],
-     'H': ['1-机构接入总表20210119'],
-     'J': ['202012181800共享平台周报数据-仅更新各类接入机构名单275+46'],
+     {'F': ['1-jrzb20210119'],
+     'G': ['1-jrzb20210119'],
+     'H': ['1-jrzb20210119'],
+     'J': ['202012181800gxptzbsj-仅更新各类接入机构名单275+46'],
      'O': ['202009301055dataPerMonth'],
      'P': ['202009301100successedUploadRatio'],
      'Q': ['202009301057updateRatioTable'],
@@ -676,10 +674,10 @@ def changeFormula(column=None,rowRange=None,externalWbPath=None,currWb=None,newe
 #     pattern = re.compile(r'\[{workbookKeyWord}20[0-9]{{2}}[0-1][0-9][0-3][0-9]'.format(workbookKeyWord=workbookKeyWord))
 #     pattern = columnHeaderContentDict['F'][-1].split('\'')[1]
     newFormula = [re.sub(pattern,replace, j, count=0, flags=0) for i in formulaTuple for j in i]
-    # 不用在regex中加caret，1-机构接入总表并不在公式string的开头。注意{{}}，specifier的escape，参考Format String Syntax或者
+    # 不用在regex中加caret，1-jrzb并不在公式string的开头。注意{{}}，specifier的escape，参考Format String Syntax或者
     # https://stackoverflow.com/questions/1875676/python-2-6-str-format-and-regular-expressions
-    # newFormula = [j.replace('[1-机构接入总表20201110.xlsx]','[1-机构接入总表20201230.xlsx]') for i in formulaTuple for j in i]
-    # 这个不是很flexible，改代码或者输错接入总表文件名日期、更新接入总表文件名日期时比较麻烦。
+    # newFormula = [j.replace('[1-jrzb20201110.xlsx]','[1-jrzb20201230.xlsx]') for i in formulaTuple for j in i]
+    # 这个不是很flexible，改代码或者输错jrzb文件名日期、更新jrzb文件名日期时比较麻烦。
     # 注意nested list comprehension，就是把内外循环放平：
     # for i in formulaTuple：
     #     for j in i：
@@ -688,7 +686,7 @@ def changeFormula(column=None,rowRange=None,externalWbPath=None,currWb=None,newe
     return newFormula
 
 rowRange=(2,463)
-newestWorkbookNamePaste='1-机构接入总表20210910.xlsx'
+newestWorkbookNamePaste='1-jrzb20210910.xlsx'
 pattern=r'\[.+\..+\]'
 replace = '['+newestWorkbookNamePaste+']'
 for column in ['F','G','H']:
@@ -703,7 +701,7 @@ for column in ['F','G','H']:
         pattern=pattern,replace=replace)
 #     pdb.set_trace()
     print(newFormula[0])
-    if '1-机构接入总表20210910.xlsx' in newFormula[0]:
+    if '1-jrzb20210910.xlsx' in newFormula[0]:
         objectiveSheet.range('{column}{rowRangeStart}:{column}{rowRangeEnd}'.format(
             column=column,rowRangeStart=rowRange[0],rowRangeEnd=rowRange[1])
                                            ).formula = newFormula
@@ -716,7 +714,7 @@ for column in ['F','G','H']:
 
 # for columns in ['J']:
 #     newFormula= changeFormula(column=columns,rowRange=(2,459),externalWbPath=None,
-#                   workbookKeyWord='共享平台周报数据',newestWorkbook='202101251800共享平台周报数据-仅更新各类接入机构名单275+46.xlsx')
+#                   workbookKeyWord='gxptzbsj',newestWorkbook='202101251800gxptzbsj-仅更新各类接入机构名单275+46.xlsx')
 #     if newFormula!=None:
 #         objectiveSheet.range('{column}{rowRangeStart}:{column}{rowRangeEnd}'.format(
 #             column=columns,rowRangeStart=rowRange[0],rowRangeEnd=rowRange[1])
@@ -728,10 +726,10 @@ formulaTuple = objectiveSheet.range('{column}{rowRangeStart}:{column}{rowRangeEn
     column=column,rowRangeStart=rowRange[0],rowRangeEnd=rowRange[1])
                                    ).formula
 # print(formulaTuple)
-pattern=r'2021年8月\\\[202109141801共享平台周报数据\-仅更新各类接入机构名单275\+46\.xlsx\]0715最准确的接口接入'
+pattern=r'2021年8月\\\[202109141801gxptzbsj\-仅更新各类接入机构名单275\+46\.xlsx\]0715zzqjkjr'
 # 转义序列运算优先级最高，所以3个backslash，第一个转义第二个，第二个转义下一个字符，最终意思是文本意义的\[。当左括号被正确转义后，
 # 中间的连词符hyphen也就不用转义了，为了保险转义一下也行。pattern是正则，replace是文本。
-replace=r'2021年8月\[202109141801共享平台周报数据-仅更新各类接入机构名单275+46.xlsx]0715最准确的接口接入'
+replace=r'2021年8月\[202109141801gxptzbsj-仅更新各类接入机构名单275+46.xlsx]0715zzqjkjr'
 newFormula = [re.sub(pattern,replace, j, count=0, flags=0) for i in formulaTuple for j in i]
 print(newFormula[0])
 if (newFormula!=None) and ('2021年8月' in newFormula[0]):
@@ -741,7 +739,7 @@ if (newFormula!=None) and ('2021年8月' in newFormula[0]):
 # formula赋值操作，报错只有一个com error，很多时候需要print(), pm(), set_trace()协同操作来debug，而且涉及公式批量操作，
 # 有时候打开外部工作簿，Excel公式就会变化（绝对路径不见了），这时xlwings的读取也会产生变化，查找替换就会失效，导致公式
 # 最终赋值不成功。对于J列更新，涉及路径变化、工作簿变化、工作表变化，处理时要小心。
-# J列这种从路径到工作表都变化的情况，到时候读取一下共享平台周报数据，输出一下对应的最新工作表，
+# J列这种从路径到工作表都变化的情况，到时候读取一下gxptzbsj，输出一下对应的最新工作表，
 # 直接复制最新的工作表名字，避免手打。
 # 20210615试了一下这段代码可以兼容周报数据工作簿打开时的情形，因为替换操作中不含路径，所以不受工作簿打开状态影响。
 
@@ -754,23 +752,23 @@ for columns in ['O','P','Q','R']:
         objectiveSheet.range('{column}{rowRangeStart}:{column}{rowRangeEnd}'.format(
             column=columns,rowRangeStart=rowRange[0],rowRangeEnd=rowRange[1])
                                            ).formula = newFormula
-# 'O','P','Q','R'先不更新了，反正202010月改称机构申请数据质量考核后才逐家进行考核，不再统一考核了，这四列也就没有更新过。
+# 'O','P','Q','R'先不更新了，反正202010月改称申请考核后才逐家进行考核，不再统一考核了，这四列也就没有更新过。
 
 
 
 # 还得写一下重命名工作表的代码。重命名一下工作表。
 workbook_queryTable_all.save(
-    r'D:\hlwjrxh\...\5-查询接入总表{:%Y%m%d%H%M}-正式进入生产环境名单275+46.xlsx'.format(
+    r'D:\hlwjrxh\...\5-查询jrzb{:%Y%m%d%H%M}-zsjrschjmd275+46.xlsx'.format(
         dt.datetime.today()
     )
 )
 
 
 
-# 读取查询总表数据。openpyxl比xlwings快，而且不会打开被读取的工作簿。
-# 既然用openpyxl打开，记得保存了更改的查询总表后再来读。
+# 读取cxzb数据。openpyxl比xlwings快，而且不会打开被读取的工作簿。
+# 既然用openpyxl打开，记得保存了更改的cxzb后再来读。
 workbook_queryTable_all=openpyxl.load_workbook(r'D:\hlwjrxh\...'
-                                               +r'\\5-查询接入总表202201121553-正式进入生产环境名单275+46.xlsx',
+                                               +r'\\5-查询jrzb202201121553-zsjrschjmd275+46.xlsx',
                                             data_only=True)
 sheetNames = workbook_queryTable_all.sheetnames
 print(sheetNames)
@@ -841,15 +839,15 @@ originalData_queryTable.replace(to_replace=r'^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$',va
 # 如果to_replace, value参数中任何一个采取regex形式，需令regex=True。如果value=None，则不替换，注意这个，虽然None与np.nan
 # 在df中涉及df运算时被同等对待，但在字符串操作比如替换中，就又不一样。或者直接认为None和nan在df中也是不一样的得了。
 
-originalData_queryTable.fillna({'协议时间戳':pd.NaT,'培训时间戳':pd.NaT,'接入测试时间戳':pd.NaT,'正式接入时间戳':pd.NaT}
+originalData_queryTable.fillna({'xysjc':pd.NaT,'pxsjc':pd.NaT,'jrcssjc':pd.NaT,'zsjrsjc':pd.NaT}
                                           ,inplace=True)
 print(
     originalData_queryTable.loc[originalData_queryTable.isin([' ']).any(axis=1)].index,'\n',
     originalData_queryTable.loc[:,originalData_queryTable.isin([' ']).any(axis=0)].columns
 )
-originalData_queryTable.loc[:,['协议时间戳','培训时间戳','接入测试时间戳','正式接入时间戳']].dtypes 
+originalData_queryTable.loc[:,['xysjc','pxsjc','jrcssjc','zsjrsjc']].dtypes 
 # 验证时间戳类型。
-# originalData_jieruzongbiao['正式接入时间戳'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
+# originalData_jieruzongbiao['zsjrsjc'].apply(lambda x: 0 if isinstance(x,(dt.datetime,pd._libs.tslibs.nattype.NaTType)) else 1)
 # 验证是否都转化为了目标类型。apply对series直接执行elementwise操作（有sequence相关的函数对它做沿轴的操作），
 # applymap对df执行elementwise操作。
 # 后续如有其它脏数据，再改regex。
@@ -859,26 +857,26 @@ originalData_queryTable.loc[:,['协议时间戳','培训时间戳','接入测试
 originalData_queryTable_20220112=originalData_queryTable.copy()
 
 
-# 正式接入机构。
+# zsjrjg。
 officiallyParticiOrg_queryTable=originalData_queryTable_20220112.loc[
-    (originalData_queryTable['接入状态']!='4协议解除'),:
+    (originalData_queryTable['接入状态']!='4xyjc'),:
     ]
 # officiallyParticiOrg_jieruzongbiao_danweiquancheng=officiallyParticiOrg_jieruzongbiao.loc[:,'单位全称'
 #     ]
 print(
-    '截至{}月末正式接入报数机构{}家({:%Y%m%d})'.format
+    '截至{}月末zsjr机构{}家({:%Y%m%d})'.format
     (
         dt.date.today().month-1,
         officiallyParticiOrg_queryTable.shape[0],dt.datetime.today()
     )
 )
-# 202102171658这张查询总表，是由20201126那个查询总表复制过来的，没有新增记录，所以正式接入机构应该会比12月月报要少几家，最终测试时
+# 202102171658这张cxzb，是由20201126那个cxzb复制过来的，没有新增记录，所以zsjrjg应该会比12月月报要少几家，最终测试时
 # 再验证数据。
 
 
 
 originalData_jierujigouhuizongbiao = pd.read_excel(
-    r'D:\hlwjrxh\...\202201272055gxptdqjrqkhz-报送关闭+查询关闭-去掉公式.xlsx',
+    r'D:\hlwjrxh\...\202201272055gxptdqjrqkhz.xlsx',
     sheet_name=0,header=0, names=None, index_col=None, 
     usecols=None, squeeze=False, dtype=None, engine=None, 
     converters=None, true_values=None, false_values=None, skiprows=None, nrows=None, 
@@ -886,9 +884,9 @@ originalData_jierujigouhuizongbiao = pd.read_excel(
     parse_dates=False, date_parser=None, thousands=None, comment=None, 
     skipfooter=0, convert_float=True, mangle_dupe_cols=True
 )
-# 正式接入机构（接入汇总表）
+# zsjrjg（jrhzb）
 officiallyParticiOrg_jierujigouhuizongbiao=originalData_jierujigouhuizongbiao.loc[
-    originalData_jierujigouhuizongbiao['是否解除协议']!='4协议解除',:
+    originalData_jierujigouhuizongbiao['sfjcxy']!='4xyjc',:
 ]
 officiallyParticiOrg_jierujigouhuizongbiao_jierujigouquancheng=officiallyParticiOrg_jierujigouhuizongbiao.loc[:,'接入机构全称']
 
@@ -896,47 +894,47 @@ officiallyParticiOrg_jierujigouhuizongbiao_jierujigouquancheng=officiallyPartici
 
 
 queryOrg_chaxunzongbiao=officiallyParticiOrg_queryTable.loc[
-    (officiallyParticiOrg_queryTable['开通状态']=='已开通')
-    &((officiallyParticiOrg_queryTable['开通查询时间'].isna())
-      |(officiallyParticiOrg_queryTable['开通查询时间']<=dt.datetime(2021,12,31)
+    (officiallyParticiOrg_queryTable['ktzt']=='已开通')
+    &((officiallyParticiOrg_queryTable['tkcxsj'].isna())
+      |(officiallyParticiOrg_queryTable['tkcxsj']<=dt.datetime(2021,12,31)
        )
      ),:
 ]
 
 queryOrg_jierujigouhuizongbiao=officiallyParticiOrg_jierujigouhuizongbiao.loc[
-    officiallyParticiOrg_jierujigouhuizongbiao['是否开通生产查询']=='已开通',:]
+    officiallyParticiOrg_jierujigouhuizongbiao['sfktsccx']=='已开通',:]
 
-print('截至{}月底开通查询机构{}家.\n其中会员或关联会员{}家'.format(
+print('截至{}月底机构{}家.\n其中{}家'.format(
     dt.date.today().month-1,
     queryOrg_jierujigouhuizongbiao.shape[0],
     queryOrg_jierujigouhuizongbiao.loc[
-        (queryOrg_jierujigouhuizongbiao['是否会员或是否与会员具有关联关系']=='是')
-        |(queryOrg_jierujigouhuizongbiao['是否会员或是否与会员具有关联关系']=='与会员具有关联关系')
+        (queryOrg_jierujigouhuizongbiao['shifouhuiyuan或是否guanlian']=='是')
+        |(queryOrg_jierujigouhuizongbiao['shifouhuiyuan或是否guanlian']=='guanlian')
         ,:].shape[0])
      )
 
 
 
-queryOrgDataframe={'开通查询机构':[queryOrg_chaxunzongbiao,queryOrg_jierujigouhuizongbiao]
+queryOrgDataframe={'':[queryOrg_chaxunzongbiao,queryOrg_jierujigouhuizongbiao]
                    }
-orgTypeColomn={'查询接入总表':'是否持牌（0921',
-               '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':'机构类型'
+orgTypeColomn={'jrzb':'是否持牌（0921',
+               'jrhzb':'机构类型'
                                 }
-orgTypeAndMemberTypeValueColomn={'查询接入总表':
-                                 ('是否持牌（0921','是否会员',['是']),
-                                 '共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':
-                                 ('机构类型','是否会员或是否与会员具有关联关系',['是','与会员具有关联关系'])
+orgTypeAndMemberTypeValueColomn={'jrzb':
+                                 ('是否持牌（0921','',['是']),
+                                 'jrhzb':
+                                 ('机构类型','',['是','guanlian'])
                                 }
 
-# memberTypeColumn={'机构接入总表':,'共享平台当前接入机构情况汇总-报送关闭+查询关闭-去掉公式':
+# memberTypeColumn={'jrzb':,'jrhzb':
 #                  }
-memberType=['是','是会员','与会员具有关联关系']
-orgType=['持牌消金机构','互联网消费金融','交易所','网络小贷','小额贷款','信托','助贷机构','银行']
+memberType=['是','','guanlian']
+orgType=['cpxjjg','hlwxfjr','jys','wlxd','xedk','xt','zdjg','yh']
 
 
 
 # 1210循环写法
-for dataframe in queryOrgDataframe['开通查询机构']:
+for dataframe in queryOrgDataframe['']:
 #     print(dataframe.head(1))
     # 对于每张机构接入表格。
     orgCount,memberCount,relatedMemberCount=[],[],[]
@@ -972,7 +970,7 @@ for dataframe in queryOrgDataframe['开通查询机构']:
                     relatedMemberCount=relatedMemberCount[-1] if len(relatedMemberCount)>0 else 'None',
                     width=30)
                      )
-                # relatedMemberCount由于机构接入总表中没有这一项统计，可能生成[]，所以需要加一个ifelse判断，否则index out of range。
+                # relatedMemberCount由于jrzb中没有这一项统计，可能生成[]，所以需要加一个ifelse判断，否则index out of range。
             
         except KeyError as e:
             continue
@@ -983,9 +981,9 @@ for dataframe in queryOrgDataframe['开通查询机构']:
               '{keys}relatedMemberCount:{newline}{Dict}'.format(keys=keys,newline='\n',Dict=dict(zip(orgType,relatedMemberCount)))
              )
         print(orgCount,memberCount,relatedMemberCount)
-        # 我曹，1223发现一个问题，接入汇总表的助贷会员数量是3，但对应的表里明明是4个，我用loc筛选一下，确实是4个助贷会员机构。
+        # 我曹，1223发现一个问题，jrhzb的zhudai会员数量是3，但对应的表里明明是4个，我用loc筛选一下，确实是4个zhudai会员机构。
         # 怀疑是变量传递有问题，但打印的都是memberCount，分业态打印时，打印出来的数量是4个，是对的，用字典形式打印出来，就是3
-        # 个，很可能问题出在形成字典的过程中。也排除了把接入总表中的助贷会员数量3传递到接入汇总表这里的可能（即df与统计的数量
+        # 个，很可能问题出在形成字典的过程中。也排除了把jrzb中的zhudai会员数量3传递到jrhzb这里的可能（即df与统计的数量
         # 错配的可能）。试着把所有有关的变量都打印了一下，发现memberCount由于一直在被append，从内层循环到最外层，没有被清空过，
         # 所以最后它的长度是业态个数*2，所以进行zip的时候会出现不匹配，进而数据丢失或错配。
         # 我在最后增加了print(orgCount,memberCount,relatedMemberCount)，打印出memberCount，证实了这个猜测。
@@ -995,22 +993,22 @@ for dataframe in queryOrgDataframe['开通查询机构']:
         
         
 queryOrg_chaxunzongbiao_benyue = officiallyParticiOrg_queryTable.loc[
-    (officiallyParticiOrg_queryTable['开通状态']=='已开通')
+    (officiallyParticiOrg_queryTable['ktzt']=='已开通')
     &(
-          (officiallyParticiOrg_queryTable['开通查询时间']>=dt.datetime(2021,12,1))
-          &(officiallyParticiOrg_queryTable['开通查询时间']<=dt.datetime(2021,12,30))
+          (officiallyParticiOrg_queryTable['tkcxsj']>=dt.datetime(2021,12,1))
+          &(officiallyParticiOrg_queryTable['tkcxsj']<=dt.datetime(2021,12,30))
      )
     ,:]
 # NaT与datetime相比较，都返回False。
 queryOrg_chaxunzongbiao_jiekou = officiallyParticiOrg_queryTable.loc[
-    (officiallyParticiOrg_queryTable['开通状态']=='已开通')
-    &((officiallyParticiOrg_queryTable['开通查询时间'].isna())
-      |(officiallyParticiOrg_queryTable['开通查询时间']<=dt.datetime(2021,12,30)
+    (officiallyParticiOrg_queryTable['ktzt']=='已开通')
+    &((officiallyParticiOrg_queryTable['tkcxsj'].isna())
+      |(officiallyParticiOrg_queryTable['tkcxsj']<=dt.datetime(2021,12,30)
        )
      )
     &(
-        (officiallyParticiOrg_queryTable['开通查询方式']=='接口')
-        |(officiallyParticiOrg_queryTable['开通查询方式']=='网页、接口')
+        (officiallyParticiOrg_queryTable['']=='')
+        |(officiallyParticiOrg_queryTable['']=='、')
     ),:
 ]
 queryOrg_chaxunzongbiao_benyue.shape,queryOrg_chaxunzongbiao_jiekou.shape
@@ -1242,9 +1240,9 @@ objectiveSheet.range('M4').options(transpose=True).value=list(
 # 读取业务种类信息，由于这张表同时存在左上方的空行、空列，要加一段识别空列的代码。这个cell中的读取代码，
 # 在处理multiIndex时，xlrd.load_workbook作用仅仅是获取空行空列行列号。
 currMonth_multiBorrTrafficByCategory_path = r'D:\hlwjrxh\...\2021年12月'+\
-                                         r'\4-3多头借贷业务种类分类对比情况表(2022-01-29)12.xls'
+                                         r'\4-3(2022-01-29)12.xls'
 lastMonth_multiBorrTrafficByCategory_path = r'D:\hlwjrxh\...\2021年12月'+\
-                                         r'\4-3多头借贷业务种类分类对比情况表(2022-01-29)11.xls'
+                                         r'\4-3(2022-01-29)11.xls'
 startRowColumnDict = {currMonth_multiBorrTrafficByCategory_path:[],lastMonth_multiBorrTrafficByCategory_path:[]}
 for path in [currMonth_multiBorrTrafficByCategory_path,lastMonth_multiBorrTrafficByCategory_path]:
     multiBorrTrafficByCategory_xlrd = xlrd.open_workbook(path,
@@ -1336,7 +1334,7 @@ multiBorrTrafficByCategory_lastPeriod = pd.read_excel(lastMonth_multiBorrTraffic
                 parse_dates=False, date_parser=None, thousands=None, comment=None, 
                 skipfooter=1, convert_float=True, mangle_dupe_cols=True)
 # multiBorrTrafficByCategory_currPeriod = pd.read_excel(r'D:\hlwjrxh\...\2021年4月'+
-#                                          r'\4-3多头借贷业务种类分类对比情况表(2021-05-18)4月.xls',
+#                                          r'\4-3(2021-05-18)4月.xls',
 #                 sheet_name=0,header=[j_row,j_row+1], names=None, index_col=[j_col,j_col+1], 
 #                 usecols=None, squeeze=False, dtype={'金额逾期率':np.float64,'项目逾期率':np.float64}, engine=None, 
 #                 converters={'金额逾期率':float,'项目逾期率':float}, true_values=None, false_values=None, skiprows=None, nrows=None, 
@@ -1345,7 +1343,7 @@ multiBorrTrafficByCategory_lastPeriod = pd.read_excel(lastMonth_multiBorrTraffic
 #                 skipfooter=1, convert_float=True, mangle_dupe_cols=True)
 # # skiprows是Rows to skip at the beginning (0-indexed).跳过开头几行。skipfooter是跳过最后的。
 # multiBorrTrafficByCategory_lastPeriod = pd.read_excel(r'D:\hlwjrxh\...\2021年4月'+
-#                                          r'\4-3多头借贷业务种类分类对比情况表(2021-05-18)3月.xls',
+#                                          r'\4-3(2021-05-18)3月.xls',
 #                 sheet_name=0,header=[j_row,j_row+1], names=None, index_col=[j_col+1,j_col+2], 
 #                 usecols=None, squeeze=False, dtype={'金额逾期率':np.float64,'项目逾期率':np.float64}, engine=None, 
 #                 converters={'金额逾期率':float,'项目逾期率':float}, true_values=None, false_values=None, skiprows=None, nrows=None, 
@@ -1457,7 +1455,7 @@ objectiveSheet.range('H3').options(transpose=True).value=list(multiBorrTrafficBy
 # 读取4-1，感觉也有4-3两个月份的报表格式不一致的问题（数据起始列不一致），也得用4-3那里的代码打印2个4-1的起始列，
 # 不一致的话手动修改一致再读取。
 multiBorrTrafficByCategory_xlrd = xlrd.open_workbook(r'D:\hlwjrxh\...\2021年12月'+
-                                         r'\4-1多头借贷分类对比情况表(2022-01-29)12.xls',
+                                         r'\4-1(2022-01-29)12.xls',
                                          formatting_info=True)
 sheetNames = multiBorrTrafficByCategory_xlrd.sheet_names()
 print(sheetNames)
@@ -1497,7 +1495,7 @@ data = pd.DataFrame(multiBorrTrafficByCategory_xlrd_dict, columns=colNames)
 
 
 multiBorrTraffic_currPeriod = pd.read_excel(r'D:\hlwjrxh\...\2021年12月'+
-                                         r'\4-1多头借贷分类对比情况表(2022-01-29)12.xls',
+                                         r'\4-1(2022-01-29)12.xls',
                 sheet_name=0,header=[j_row,j_row+1], names=None, index_col=[j_col], 
                 usecols=None, squeeze=False, dtype={'金额逾期率':np.float64,'项目逾期率':np.float64}, engine=None, 
                 converters={'金额逾期率':float,'项目逾期率':float}, true_values=None, false_values=None, skiprows=None, nrows=None, 
@@ -1506,7 +1504,7 @@ multiBorrTraffic_currPeriod = pd.read_excel(r'D:\hlwjrxh\...\2021年12月'+
                 skipfooter=0, convert_float=True, mangle_dupe_cols=True)
 # skiprows是Rows to skip at the beginning (0-indexed).跳过开头几行。skipfooter是跳过最后的。
 multiBorrTraffic_lastPeriod = pd.read_excel(r'D:\hlwjrxh\...\2021年12月'+
-                                         r'\4-1多头借贷分类对比情况表(2022-01-29)11.xls',
+                                         r'\4-1(2022-01-29)11.xls',
                 sheet_name=0,header=[j_row,j_row+1], names=None, index_col=[j_col], 
                 usecols=None, squeeze=False, dtype={'金额逾期率':np.float64,'项目逾期率':np.float64}, engine=None, 
                 converters={'金额逾期率':float,'项目逾期率':float}, true_values=None, false_values=None, skiprows=None, nrows=None, 
